@@ -152,7 +152,7 @@ export const projectUpdaterApi = (projectUpdate: any) => {
   return async (dispatch: DispatchType) => {
     try {
       const result = await https.put(
-        "/api/Project/updateProjectp",
+        "/api/Project/updateProject",
         projectUpdate
       );
       const action: PayloadAction<ProjectModelUpdate> = updateProjectAction(
