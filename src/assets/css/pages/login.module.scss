@@ -1,0 +1,41 @@
+.p-password__display {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 13px;
+  margin: auto;
+  display: block;
+  width: 23px;
+  height: 13px;
+  background-image: url(../../img/ico_visibale.svg);
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: cover;
+  cursor: pointer;
+}
+.p-password__display__invisible {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 13px;
+  margin: auto;
+  display: block;
+  width: 23px;
+  height: 13px;
+  background-image: url(../../img/ico_invisibale.svg);
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: cover;
+  cursor: pointer;
+}
+.btn-login {
+font-size: 0.9rem;
+letter-spacing: 0.05rem;
+padding: 0.75rem 1rem;
+width: 100%;
+}
+
+.btn-google {
+color: white !important;
+background-color: #dc3545;
+}
