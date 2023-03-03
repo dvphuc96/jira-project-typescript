@@ -2,11 +2,13 @@ import React from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { loginApi } from "../../redux/reducers/userReducer";
+import { loginApi, loginFacebookApi } from "../../redux/reducers/userReducer";
 import { NavLink } from "react-router-dom";
 import styleCustom from '../../assets/css/pages/login.module.scss';
 import { useState } from "react";
 import { DispatchType } from "../../redux/configStore";
+import ReactFacebookLogin from "react-facebook-login";
+
 type Props = {};
 
 const Login = (props: Props) => {
@@ -29,6 +31,15 @@ const Login = (props: Props) => {
       dispatch(action);
     },
   });
+  const responseFacebook = (res:any) => {
+    if (res?.accessToken) {
+      let facebookData = {
+        facebookToken: res.accessToken,
+      };
+      const action = loginFacebookApi(facebookData);
+      dispatch(action);
+    }
+  };
   return (
     <>
       <div className="container text-left mt-5">
@@ -113,8 +124,8 @@ const Login = (props: Props) => {
                       OR
                     </p>
                   </div>
-                  {/* <div className="d-grid mb-2">
-                    <FacebookLogin
+                  <div className="d-grid mb-2">
+                    <ReactFacebookLogin
                       appId="655081252973502"
                       autoLoad={false}
                       fields="name,email,picture"
@@ -122,7 +133,7 @@ const Login = (props: Props) => {
                       cssClass={`${styleCustom["btn-login"]} btn btn-primary text-uppercase fw-bold`}
                       icon="fab fa-facebook-f me-2"
                     />
-                  </div> */}
+                  </div>
                   <div className="pt-3">
                     <p>
                       Don't have an account?{" "}

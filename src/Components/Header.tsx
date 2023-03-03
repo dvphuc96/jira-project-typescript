@@ -28,7 +28,7 @@ const Header = (props: Props) => {
                 to={""}
               >
                 <img
-                  src={userLogin.avatar}
+                  src={userLogin?.avatar ?? `https://0.gravatar.com/avatar/9a1ec6a90c683643fb9baac32d3a4263?s=32&d=mm&r=g&s=24`}
                   className="avatar avatar-24 photo rounded-circle"
                   style={{ width: "30px" }}
                 />

@@ -92,6 +92,23 @@ export const loginApi = (userLogin: any) => {
   };
 };
 
+export const loginFacebookApi = (facebookToken:any) => {
+  return async (dispatch: DispatchType) => {
+    try {
+      const result = await https.post("/api/Users/facebooklogin", facebookToken);
+      history.push("profile");
+      const action: PayloadAction<UserModelLogin[]> = getUserLoginAction(
+        result.data.content
+      );
+      dispatch(action);
+      saveStore(ACCESS_TOKEN, result.data.content.accessToken);
+      saveStoreJson(USER_LOGIN, result.data.content);
+    } catch (err: any) {
+      message.error(`${err.responese.data.content}`);
+    }
+  };
+};
+
 export const userRegisterApi = (userRegister: any) => {
   return async (dispatch: DispatchType) => {
     try {
