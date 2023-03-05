@@ -90,7 +90,7 @@ const TaskUpdate = (props: Props) => {
         <div className="me-5">
           <Button
             onClick={() => {
-              navigate("/task");
+              navigate("/");
             }}
           >
             Back

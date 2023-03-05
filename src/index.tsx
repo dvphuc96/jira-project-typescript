@@ -10,7 +10,6 @@ import Home from "./Pages/Home/Home";
 import Login from "./Pages/Login/Login";
 import Register from "./Pages/Register/Register";
 import Project from "./Pages/Project/Project";
-import Task from "./Pages/Task/Task";
 import Profile from "./Pages/Profile/Profile";
 import ProjectRegister from "./Pages/Project/ProjectRegister";
 import ProjectUpdate from "./Pages/Project/ProjectUpdate";
@@ -34,7 +33,6 @@ root.render(
           <Route path="project" element={<Project />}></Route>
           <Route path="project/register" element={<ProjectRegister />}></Route>
           <Route path="project/:id" element={<ProjectUpdate />}></Route>
-          <Route path="task" element={<Task />}></Route>
           <Route path="task/register" element={<TaskRegister />}></Route>
           <Route path="task/:id" element={<TaskUpdate />}></Route>
           <Route path="*" element={<Navigate to="/" />}></Route>

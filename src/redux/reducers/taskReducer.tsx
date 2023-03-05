@@ -125,8 +125,7 @@ export const taskUpdaterApi = (taskUpdate: TaskModelUpdate) => {
         result.data.content
       );
       dispatch(action);
-      message.success(`${result.data.message} chuyển tới trang danh sách task`);
-      history.push("/task");
+      message.success(result.data.message);
     } catch (err: any) {
       message.error(`${err.responese.data.content}`);
     }

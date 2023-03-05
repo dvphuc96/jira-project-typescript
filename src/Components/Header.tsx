@@ -128,10 +128,10 @@ const Header = (props: Props) => {
                   <li className="nav-item">
                     <NavLink
                       className="nav-link active"
-                      to="/task"
+                      to="/task/register"
                       aria-current="page"
                     >
-                      Task<span className="visually-hidden">(current)</span>
+                      Create task<span className="visually-hidden">(current)</span>
                     </NavLink>
                   </li>
                 </ul>
