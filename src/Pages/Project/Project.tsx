@@ -9,7 +9,7 @@ const Project = (props: Props) => {
   return (
     <div className="container">
       <div className="d-flex justify-content-between py-4">
-        <h5 className="title-page">Projects</h5>
+        <h5 className="title-page">Project List</h5>
         <Button
           onClick={() => {
             navigate("/project/register");

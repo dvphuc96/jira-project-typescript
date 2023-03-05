@@ -1,23 +1,21 @@
-import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import * as yup from "yup";
 import { DispatchType, RootState } from "../../redux/configStore";
 import {
   getDetailProjectApi,
   projectUpdaterApi,
-  ProjectModelDetail,
 } from "../../redux/reducers/projectReducer";
-import Form from "react-bootstrap/Form";
-import { Button } from "react-bootstrap";
+import { Form, Input, Button, Select } from "antd";
 import {
   getAllProjectCategoryApi,
   ProjectCategoryModel,
 } from "../../redux/reducers/projectCategoryReducer";
+import TextArea from "antd/es/input/TextArea";
 type Props = {};
 
 const ProjectUpdate = (props: Props) => {
+  const [form] = Form.useForm();
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch: DispatchType = useDispatch();
@@ -27,44 +25,37 @@ const ProjectUpdate = (props: Props) => {
   const { arrProjectCategory } = useSelector(
     (state: RootState) => state.projectCategoryReducer
   );
-  //State component
-  const [projectDetailClone, setProjectDetail] = useState(projectDetail);
 
-  useEffect(() => {
+  const getDetailProject = () => {
     const action = getDetailProjectApi(id);
     dispatch(action);
-  }, [id]);
-
-  useEffect(() => {
+  };
+  const getAllCategory = () => {
     const actionAsync = getAllProjectCategoryApi();
     dispatch(actionAsync);
+  };
+  useEffect(() => {
+    getDetailProject();
+    getAllCategory();
   }, []);
 
   useEffect(() => {
-    setProjectDetail(projectDetail);
+    form.setFieldsValue({ ...projectDetail });
   }, [projectDetail]);
 
-  const form = useFormik({
-    initialValues: {
-      projectName: "",
-      description: "",
-      categoryId: 1,
-    },
-    validationSchema: yup.object().shape({
-      projectName: yup.string(),
-      description: yup.string(),
-      categoryId: yup.number(),
-      alias: yup.string(),
-    }),
-    onSubmit: (values: any, { resetForm }) => {
-      values.id = projectDetail?.id;
-      values.creator = projectDetail?.creator.id;
-      console.log(values);
-      //   const action = projectUpdaterApi(values);
-      //   dispatch(action);
-      //   resetForm();
-    },
-  });
+  const validateMessages = {
+    required: "${label} is required !!",
+  };
+
+  const handleSubmit = (values: any) => {
+    values.categoryId = values.projectCategory.id.toString();
+    values.creator = values.creator.id;
+    delete values.projectCategory;
+    const action = projectUpdaterApi(values);
+    dispatch(action);
+    form.resetFields();
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between mt-4 mb-2">
@@ -81,64 +72,67 @@ const ProjectUpdate = (props: Props) => {
       </div>
       <div className="tabled pt-3">
         <div className="mx-auto" style={{ maxWidth: "1000px" }}>
-          <Form onSubmit={form.handleSubmit}>
-            <fieldset disabled>
-              <Form.Group className="mb-3">
-                <Form.Label>Project Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  id="projectIdInput"
-                  name="id"
-                  value={projectDetailClone?.id}
-                  onChange={form.handleChange}
-                  onBlur={form.handleBlur}
-                />
-              </Form.Group>
-            </fieldset>
-            <Form.Group className="mb-3">
-              <Form.Label>Project Name</Form.Label>
-              <Form.Control
-                type="text"
-                id="projectNameInput"
-                name="projectName"
-                value={projectDetailClone?.projectName}
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Project Category</Form.Label>
-              <Form.Select
-                name="categoryId"
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-              >
-                {arrProjectCategory?.map(
-                  (category: ProjectCategoryModel, index: number) => {
-                    return (
-                      <option key={index} value={category.id}>
-                        {category.projectCategoryName}
-                      </option>
-                    );
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            size="large"
+            name="nest-messages"
+            wrapperCol={{ span: 24 }}
+            layout="vertical"
+            validateMessages={validateMessages}
+          >
+            <Form.Item label="Project Id" name="id">
+              <Input readOnly disabled />
+            </Form.Item>
+            <Form.Item
+              label="Project Name"
+              name="projectName"
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item name={["creator", "id"]} hidden>
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Category"
+              name={["projectCategory", "id"]}
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <Select
+                // mode="multiple"
+                style={{
+                  width: "100%",
+                }}
+                maxTagCount="responsive"
+                placeholder="Please select category"
+                // value={categories?.map(item => item.value)}
+                options={arrProjectCategory?.map(
+                  (item: ProjectCategoryModel) => {
+                    // form.setFieldsValue({
+                    //   categoryId: item.id,
+                    // });
+                    return {
+                      label: item.projectCategoryName,
+                      value: item.id,
+                    };
                   }
                 )}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                placeholder="Description"
-                style={{ height: "100px" }}
-                name="description"
-                value={projectDetailClone?.description}
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
               />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <TextArea />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit">Submit</Button>
+            </Form.Item>
           </Form>
         </div>
       </div>

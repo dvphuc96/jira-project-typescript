@@ -1,22 +1,20 @@
 import React, { useEffect } from "react";
-import { useFormik } from "formik";
-import * as yup from "yup";
 import { DispatchType, RootState } from "../../redux/configStore";
 import { useDispatch, useSelector } from "react-redux";
 import { projectRegisterApi } from "../../redux/reducers/projectReducer";
-
 import {
   getAllProjectCategoryApi,
   ProjectCategoryModel,
 } from "../../redux/reducers/projectCategoryReducer";
+import { Form, Input, Button, Select } from "antd";
 import { useNavigate } from "react-router-dom";
-import Form from "react-bootstrap/Form";
-import { Button } from "react-bootstrap";
+import TextArea from "antd/es/input/TextArea";
 
 type Props = {};
 
 const ProjectRegister = (props: Props) => {
   const navigate = useNavigate();
+  const [form] = Form.useForm();
   const dispatch: DispatchType = useDispatch();
   const { arrProjectCategory } = useSelector(
     (state: RootState) => state.projectCategoryReducer
@@ -25,24 +23,15 @@ const ProjectRegister = (props: Props) => {
     const actionAsync = getAllProjectCategoryApi();
     dispatch(actionAsync);
   }, []);
-  const form = useFormik({
-    initialValues: {
-      projectName: "",
-      description: "",
-      categoryId: 1,
-    },
-    validationSchema: yup.object().shape({
-      projectName: yup.string(),
-      description: yup.string(),
-      categoryId: yup.number(),
-      alias: yup.string(),
-    }),
-    onSubmit: (values: any, { resetForm }) => {
-      const action = projectRegisterApi(values);
-      dispatch(action);
-      resetForm();
-    },
-  });
+  const validateMessages = {
+    required: "${label} is required !!",
+  };
+  const handleCreateProject = (values: any) => {
+    values.categoryId = values.projectCategory.id;
+    const action = projectRegisterApi(values);
+    dispatch(action);
+    form.resetFields();
+  };
   return (
     <>
       <div className="d-flex justify-content-between mt-4 mb-2">
@@ -59,49 +48,56 @@ const ProjectRegister = (props: Props) => {
       </div>
       <div className="tabled pt-3">
         <div className="mx-auto" style={{ maxWidth: "1000px" }}>
-          <Form onSubmit={form.handleSubmit}>
-            <Form.Group className="mb-3">
-              <Form.Label>Project Name</Form.Label>
-              <Form.Control
-                type="text"
-                id="projectNameInput"
-                name="projectName"
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Project Category</Form.Label>
-              <Form.Select
-                name="categoryId"
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
-              >
-                {arrProjectCategory?.map(
-                  (category: ProjectCategoryModel, index: number) => {
-                    return (
-                      <option key={index} value={category.id}>
-                        {category.projectCategoryName}
-                      </option>
-                    );
+          <Form
+            form={form}
+            onFinish={handleCreateProject}
+            size="large"
+            name="nest-messages"
+            wrapperCol={{ span: 24 }}
+            layout="vertical"
+            validateMessages={validateMessages}
+          >
+            <Form.Item
+              label="Project Name"
+              name="projectName"
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Category"
+              name={["projectCategory", "id"]}
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <Select
+                style={{
+                  width: "100%",
+                }}
+                maxTagCount="responsive"
+                placeholder="Please select category"
+                options={arrProjectCategory?.map(
+                  (item: ProjectCategoryModel) => {
+                    return {
+                      label: item.projectCategoryName,
+                      value: item.id,
+                    };
                   }
                 )}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                placeholder="Description"
-                style={{ height: "100px" }}
-                name="description"
-                onChange={form.handleChange}
-                onBlur={form.handleBlur}
               />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              Submit
-            </Button>
+            </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true }]}
+              tooltip="This is a required field"
+            >
+              <TextArea />
+            </Form.Item>
+            <Form.Item>
+              <Button htmlType="submit">Submit</Button>
+            </Form.Item>
           </Form>
         </div>
       </div>

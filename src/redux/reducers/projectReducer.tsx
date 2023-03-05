@@ -12,12 +12,21 @@ export interface ProjectModel {
   categoryName: string;
   alias: string;
   deleted: false;
+  creator: {
+    id: number;
+    name: string;
+  };
+  projectCategory: {
+    id: number;
+    name: string;
+  };
 }
 export interface ProjectModelCreate {
   projectName: string;
   description: string;
   categoryId: number;
   alias: string;
+  creator: number;
 }
 export interface ProjectModelUpdate {
   id: number;
@@ -33,20 +42,19 @@ export interface ProjectModelDetail {
   creator: {
     id: number;
     name: string;
-
   };
   description: string;
   projectCategory: {
     id: number;
-    name: string,
+    name: string;
   };
 }
 
 export type projectState = {
-  arrProject: ProjectModel[]
-  projectRegister: ProjectModelCreate | null
-  projectUpdate: ProjectModelUpdate | null
-  projectDetail: ProjectModelDetail | null
+  arrProject: ProjectModel[];
+  projectRegister: ProjectModelCreate | null;
+  projectUpdate: ProjectModelUpdate | null;
+  projectDetail: ProjectModelDetail | null;
 };
 
 const initialState: projectState = {
@@ -116,8 +124,9 @@ export const getDetailProjectApi = (id: any) => {
   return async (dispatch: DispatchType) => {
     try {
       const result = await https.get(`/api/Project/getProjectDetail?id=${id}`);
-      const action: PayloadAction<ProjectModelDetail> =
-        getDetailProjectAction(result.data.content);
+      const action: PayloadAction<ProjectModelDetail> = getDetailProjectAction(
+        result.data.content
+      );
       dispatch(action);
     } catch (err: any) {
       message.error(`${err.responese.data.content}`);
@@ -131,16 +140,18 @@ export const projectRegisterApi = (projectRegister: any) => {
     try {
       projectRegister.categoryId = parseInt(projectRegister.categoryId);
       const result = await https.post(
-        "/api/Project/createProject",
+        "/api/Project/createProjectAuthorize",
         projectRegister
       );
       const action: PayloadAction<ProjectModelCreate> = createProjectAction(
         result.data.content
       );
       dispatch(action);
-      console.log("result", result.data.content);
-      history.push("/project");
-      message.success(`${result.data.message} mở consolog để coi kết quả nhé`);
+      const id = result.data.content?.id;
+      message.success(`${result.data.message} chuyển tới trang update project`);
+      if (id) {
+        history.push(`/project/${id}`);
+      }
     } catch (err: any) {
       message.error(`${err.responese.data.content}`);
     }
@@ -148,18 +159,21 @@ export const projectRegisterApi = (projectRegister: any) => {
 };
 
 // Update Project Api
-export const projectUpdaterApi = (projectUpdate: any) => {
+export const projectUpdaterApi = (projectUpdate: ProjectModelUpdate) => {
   return async (dispatch: DispatchType) => {
     try {
       const result = await https.put(
-        "/api/Project/updateProject",
+        `/api/Project/updateProject?projectId=${projectUpdate.id}`,
         projectUpdate
       );
       const action: PayloadAction<ProjectModelUpdate> = updateProjectAction(
         result.data.content
       );
       dispatch(action);
-      message.success(result.data.message);
+      message.success(
+        `${result.data.message} chuyển tới trang danh sách project`
+      );
+      history.push("/project");
     } catch (err: any) {
       message.error(`${err.responese.data.content}`);
     }

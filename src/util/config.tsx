@@ -20,6 +20,7 @@ export const { saveStore, saveStoreJson, getStore, getStoreJson, removeStore } =
       return stringObject;
     },
     getStore: (name: string) => {
+      console.log(name);
       if (localStorage.getItem(name)) {
         return localStorage.getItem(name);
       }
@@ -51,6 +52,8 @@ https.interceptors.request.use(
       Authorization: `Bearer ${getStore(ACCESS_TOKEN)}` || "",
       TokenCybersoft: TOKEN_CYBERSOFT || "",
     };
+    console.log(config.headers.Authorization);
+    console.log(config.headers.TokenCybersoft);
     return config;
   },
   (err) => {
